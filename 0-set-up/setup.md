@@ -14,6 +14,21 @@
 3. `uv add jupyterlab --dev` to add packages needed for development. This command will add the development version of `jupyterlab` to `pyproject.toml`. 
 4. `uv sync` to install what's in `pyproject.toml`. `.venv` will also update to reflect these changes.
 5. `uv run jupyter lab` to run jupyter lab
+6. Use the same virtual environment as a Jupyter kernel:
+    1. `uv add ipykernel` to install the IPython kernel package inside the VM.
+    2. `uv run python -m ipykernel install --use --name ai-engineering-notes --display-name "ai-engineering-notes"` to register the kernel.
+    3. Select this kernel when starting a Jupyter notebook.
 
 # Docker
-    
+1. Each service now uses the default Docker volumes by mounting to the container paths directly. For example in postgres: `- /var/lib/postgresql/data`. 
+
+    1. To mount to a specified named volume: 
+        - declare the name prior to the container path: `postgres_data:/var/lib/postgresql/data`. 
+        - declare named volumes at the bottom of the YML file. 
+        ``` docker-compose.yml
+            volumes:
+                postgres_data:
+                pgadmin_data:
+                elasticsearch_data:
+                opensearch_data:
+        ```

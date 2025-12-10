@@ -1,0 +1,6 @@
+
+# environment
+.env
+
+#OS
+.DS_Store
