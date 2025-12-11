@@ -15,7 +15,7 @@
 4. `uv sync` to install what's in `pyproject.toml`. `.venv` will also update to reflect these changes.
 5. `uv run jupyter lab` to run jupyter lab
 6. Use the same virtual environment as a Jupyter kernel:
-    1. `uv add ipykernel` to install the IPython kernel package inside the VM.
+    1. `uv add ipykernel --dev` to install the IPython kernel package inside the VM. But add this to the development kit because it will not be utilized in production.
     2. `uv run python -m ipykernel install --use --name ai-engineering-notes --display-name "ai-engineering-notes"` to register the kernel.
     3. Select this kernel when starting a Jupyter notebook.
 

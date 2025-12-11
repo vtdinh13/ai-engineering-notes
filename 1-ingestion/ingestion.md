@@ -2,3 +2,4 @@
     
     1. Check the output of the `APP_ID` and `API_KEY`. 
     2. Log `response.status_code/response.text` before calling `.json` to see the real error payload.
+2. "Payload" is a generic name for the body of an HTTP response. It's the part of the content that's actually useful.
