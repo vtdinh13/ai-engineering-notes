@@ -1,16 +1,22 @@
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from typing import Optional, List
+from concurrent.futures import ThreadPoolExecutor
+import threading
+from pathlib import Path
 
+import httpx
 import numpy as np
 from openai import OpenAI
 from sentence_transformers import SentenceTransformer
 from tqdm import tqdm
+import pandas as pd
 
 from toyaikit.pricing import PricingConfig
 from chunking import extract_text_from_pdf, chunk_sliding_window
 from minsearch import VectorSearch
 from utils import instructions, prompt_template
+
 
 @dataclass
 class RAGConfig:
@@ -20,12 +26,12 @@ class RAGConfig:
     def __post_init__(self):
         self.embedding_model = SentenceTransformer(self.embedding_model_name)
         self.vindex = VectorSearch(keyword_fields=[])
-        self.client = OpenAI()
         self.instructions = instructions
         
 
 default_config = RAGConfig()
 pricing = PricingConfig()
+_client_local = threading.local()
 
 @dataclass
 class RAGResult:
@@ -84,31 +90,33 @@ def build_prompt(user_query, search_results):
     prompt = prompt_template.format(user_question=user_query, context=search_json).strip()
     return prompt
 
-def ask_llm(user_query, config=default_config, model="gpt-4o-mini"):
-    """Send the prepared prompt to the LLM client and return the raw SDK response."""
 
-    client = config.client
+def ask_llm(user_query, config=default_config):
+    """Send the prepared prompt to the LLM client and return the raw SDK response."""
+    model = config.llm_model_name
     instructions = config.instructions
 
-    messages = []
+    http_client = None
+    client = getattr(_client_local, "client", None)
+    if client is None:
+        http_client = httpx.Client()
+        client = OpenAI(http_client=http_client)
+        _client_local.client = client
 
-
-    messages.append({
-        "role": "system",
-        "content": instructions
-    })
-
-    messages.append({
-        "role": "user",
-        "content": user_query
-    })
-
-    response = client.responses.create(
-        model=model,
-        input=messages
-    )
-
-    return response
+    messages = [
+        {"role": "system", "content": instructions},
+        {"role": "user", "content": user_query}]
+    
+    try:
+        response = client.responses.create(
+            model=model,
+            input=messages
+        )
+        return response
+    finally:
+        if http_client is not None:
+            http_client.close()
+            del _client_local.client
 
 def calculate_cost(model, input_tokens, output_tokens):
     """Convert token counts into dollar costs using the configured pricing table."""
@@ -133,9 +141,9 @@ def run_rag(user_query, config=default_config) -> RAGResult:
     output_tokens = getattr(usage, "output_tokens")
 
     cost = calculate_cost(model, input_tokens, output_tokens)
-    input_cost = cost[0]
-    output_cost = cost[1]
-    total_cost = cost [2]
+    input_cost = float(cost[0])
+    output_cost = float(cost[1])
+    total_cost = float(cost[2])
 
     results = RAGResult(
         question=user_query,
@@ -149,3 +157,53 @@ def run_rag(user_query, config=default_config) -> RAGResult:
     )
     return results
 
+
+def map_progress(pool, seq, f):
+    """Map function f over seq using the provided executor pool while
+    displaying a tqdm progress bar. Returns a list of results in submission order.
+    """
+    results = []
+    
+    with tqdm(total=len(seq)) as progress:
+        futures = []
+    
+        for el in seq:
+            future = pool.submit(f, el)
+            future.add_done_callback(lambda p: progress.update())
+            futures.append(future)
+
+        for future in futures:
+            result = future.result()
+            results.append(result)
+        
+        return results
+
+
+def run_rag_concurrent(path_to_ground_truth:str, outpath:str):
+    ground_truth = pd.read_csv(path_to_ground_truth)
+    questions = [q for q in ground_truth["question"]][:2]
+    with ThreadPoolExecutor(max_workers=6) as pool:
+        results = map_progress(pool, questions, run_rag)
+    
+    results_to_json_object = [asdict(result) for result in results]
+
+    Path(outpath).write_text(json.dumps(results_to_json_object, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    return results
+
+def main(path_to_ground_truth="sample_gt.csv", outpath="rag_results_300_250.json", size=300, step=250, start_page=1):
+    """Build the index and run the RAG batch."""
+    pc = ProcessChunks(config=default_config)
+    chunks = pc.get_chunks(size=size, step=step, start_page=start_page)
+    embeddings = pc.embed_chunks(chunks)
+    pc.index_chunks(embeddings, chunks)
+
+    results = run_rag_concurrent(
+        path_to_ground_truth=path_to_ground_truth,
+        outpath=outpath,
+    )
+    print(f"Wrote {len(results)} results to rag_results.json")
+
+
+if __name__ == "__main__":
+    main()

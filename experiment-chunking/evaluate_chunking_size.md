@@ -30,7 +30,19 @@ class RAGResult:
 ``` 
 
 ## Asynchronous pipeline 
-- 
+1. `RuntimeError: Already borrowed` is httpx complaining that the same OpenAI client instance is being used by multiple threads at once. In rag.py, default_config.client is shared globally; when you fan out run_rag with ThreadPoolExecutor, each thread tries to use that one client simultaneously, and httpx doesn’t allow the underlying connection to be “borrowed” twice.
+
+Options:
+
+Give each thread its own client. For a quick fix, move OpenAI() construction inside ask_llm so every call uses a fresh client, or pass a thread-local config into run_rag rather than the shared default_config.
+
+Use AsyncOpenAI and switch to asyncio, which is designed for concurrent requests.
+
+Keep a threading.local() that stores OpenAI() per thread—so you still reuse within a thread, but each thread has its own instance.
+
+    - Because the OpenAI Python SDK still shares the underlying httpx client across calls, simply instantiating OpenAI() inside ask_llm doesn’t make the connection thread-safe. Every thread ends up hitting the same httpx Response/connection pool, so when two threads call responses.create concurrently you still get RuntimeError: Already borrowed. To eliminate it you must ensure each thread uses its own HTTP client—e.g., wrap OpenAI() in threading.local() (so each worker lazily creates its own instance) or switch to the async client and drive requests with asyncio.
+
+2. Local thread - When you push run_rag through a thread pool, multiple threads hit ask_llm simultaneously. The OpenAI Python client uses httpx under the hood, and a single httpx client can’t service two requests at once—if two threads try, you get RuntimeError: Already borrowed. By storing an OpenAI client inside threading.local(), each thread gets its own independent HTTP client; they never share sockets, so concurrent requests don’t fight over the same connection.
 
 ### Notes
 1. Organize packages into standard, external, and local libraries.
