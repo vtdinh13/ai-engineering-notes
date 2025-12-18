@@ -181,17 +181,24 @@ def map_progress(pool, seq, f):
 
 def run_rag_concurrent(path_to_ground_truth:str, outpath:str):
     ground_truth = pd.read_csv(path_to_ground_truth)
-    questions = [q for q in ground_truth["question"]][:2]
+    records = ground_truth[["question", "summary_answer"]].to_dict(orient="records")
+    questions = [r["question"] for r in records]
+    summary_answers = [r["summary_answer"] for r in records]
+
     with ThreadPoolExecutor(max_workers=6) as pool:
         results = map_progress(pool, questions, run_rag)
     
-    results_to_json_object = [asdict(result) for result in results]
+    json_rows=[]
+    for summary_answer, rag_result in zip(summary_answers, results):
+        data = asdict(rag_result)
+        data["reference_answer"] = summary_answer
+        json_rows.append(data)
 
-    Path(outpath).write_text(json.dumps(results_to_json_object, ensure_ascii=False, indent=2), encoding="utf-8")
+    Path(outpath).write_text(json.dumps(json_rows, ensure_ascii=False, indent=2), encoding="utf-8")
 
     return results
 
-def main(path_to_ground_truth="sample_gt.csv", outpath="rag_results_300_250.json", size=300, step=250, start_page=1):
+def main(path_to_ground_truth="sample_gt.csv", outpath="rag_results_1000_833.json", size=1000, step=833, start_page=1):
     """Build the index and run the RAG batch."""
     pc = ProcessChunks(config=default_config)
     chunks = pc.get_chunks(size=size, step=step, start_page=start_page)
@@ -202,7 +209,7 @@ def main(path_to_ground_truth="sample_gt.csv", outpath="rag_results_300_250.json
         path_to_ground_truth=path_to_ground_truth,
         outpath=outpath,
     )
-    print(f"Wrote {len(results)} results to rag_results.json")
+    print(f"Wrote {len(results)} results to {outpath}")
 
 
 if __name__ == "__main__":
