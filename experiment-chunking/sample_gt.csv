@@ -1,0 +1,800 @@
+question,summary_answer,difficulty,text,id
+importance of reliable benchmarks in AI,"It emphasizes that many benchmarks may not accurately measure the intended metrics, stressing the need for careful evaluation.",beginner,"writing benchmarks. As new benchmarks are constantly introduced and old
+benchmarks become saturated, you should look for the latest benchmarks.
+Make sure to evaluate how reliable a benchmark is. Because anyone can
+create and publish a benchmark, many benchmarks might not be measuring
+what you expect them to measure.",a762b76e
+what is evaluation-driven development in ai?,"Evaluation-driven development refers to the approach of establishing evaluation criteria before building an AI application, similar to how test-driven development focuses on writing tests before code.",beginner,"Before investing time, money, and resources into building an application,
+it’s important to understand how this application will be evaluated. I call
+this approach evaluation-driven development. The name is inspired by test-
+driven development in software engineering, which refers to the method of
+writing tests before writing code. In AI engineering, evaluation-driven
+development means defining evaluation criteria before building.",aa6103f5
+performance differences in model APIs,"The excerpt mentions that the same AI model may perform differently across various APIs due to optimization techniques used, which necessitates thorough testing when switching APIs.",intermediate,"After developing a model, a developer can choose to open source it, make it
+accessible via an API, or both. Many model developers are also model
+service providers. Cohere and Mistral open source some models and
+provide APIs for some. OpenAI is typically known for their commercial
+models, but they’ve also open sourced models (GPT-2, CLIP). Typically,
+model providers open source weaker models and keep their best models
+behind paywalls, either via APIs or to power their products.
+Model APIs can be available through model providers (such as OpenAI and
+Anthropic), cloud service providers (such as Azure and GCP [Google Cloud
+Platform]), or third-party API providers (such as Databricks Mosaic,
+Anyscale, etc.). The same model can be available through different APIs
+with different features, constraints, and pricings. For example, GPT-4 is
+available through both OpenAI and Azure APIs. There might be slight
+differences in the performance of the same model provided through
+different APIs, as different APIs might use different techniques to optimize
+this model, so make sure to run thorough tests when you switch between
+model APIs.
+Commercial models are only accessible via APIs licensed by the model
+13
+developers. Open source models can be supported by any API provider,
+allowing you to pick and choose the provider that works best for you. For
+commercial model providers, models are their competitive advantages. For
+API providers that don’t have their own models, APIs are their competitive",db22bdaa
+why do OpenAI models seem worse after updates,"The article mentions that users often perceive OpenAI's models as deteriorating post-update, supported by a study indicating significant performance changes in GPT-3.5 and GPT-4 between March and June 2023.",beginner,"ARE OPENAI’S MODELS GETTING WORSE?
+Every time OpenAI updates its models, people complain that their models
+seem to be getting worse. For example, a study by Stanford and UC
+Berkeley (Chen et al., 2023) found that for many benchmarks, both GPT-
+3.5 and GPT-4’s performances changed significantly between March 2023
+and June 2023, as shown in Figure 4-9.
+Figure 4-9. Changes in the performances of GPT-3.5 and GPT-4 from March 2023 to
+June 2023 on certain benchmarks (Chen et al., 2023).",0b498d7c
+Why did Samsung ban ChatGPT?,"Samsung banned ChatGPT due to a serious incident involving leaked information, the details of which remain unclear, highlighting concerns over data security and privacy.",beginner,"15
+company’s secrets. It’s unclear how Samsung discovered this leak and
+how the leaked information was used against Samsung. However, the
+incident was serious enough for Samsung to ban ChatGPT in May 2023.
+Some countries have laws that forbid sending certain data outside their
+borders. If a model API provider wants to serve these use cases, they will
+have to set up servers in these countries.
+If you use a model API, there’s a risk that the API provider will use your
+data to train its models. Even though most model API providers claim they
+don’t do that, their policies can change. In August 2023, Zoom faced a
+backlash after people found out the company had quietly changed its terms
+of service to let Zoom use users’ service-generated data, including product
+usage data and diagnostics data, to train its AI models.
+What’s the problem with people using your data to train their models?
+While research in this area is still sparse, some studies suggest that AI
+models can memorize their training samples. For example, it’s been found
+that Hugging Face’s StarCoder model memorizes 8% of its training set.
+These memorized samples can be accidentally leaked to users or
+intentionally exploited by bad actors, as demonstrated in Chapter 5.
+Data lineage and copyright
+Data lineage and copyright concerns can steer a company in many
+directions: toward open source models, toward proprietary models, or away",d188bbdb
+methods for decontaminating evaluation data,"The text emphasizes the need to actively decontaminate data after detecting contamination, which ensures that evaluation benchmarks accurately represent model performance without bias from previously seen samples.",intermediate,"to evaluate it on contaminated benchmarks, but this might still be the right
+thing to do.
+Handling data contamination
+The prevalence of data contamination undermines the trustworthiness of
+evaluation benchmarks. Just because a model can achieve high performance
+on bar exams doesn’t mean it’s good at giving legal advice. It could just be
+that this model has been trained on many bar exam questions.
+To deal with data contamination, you first need to detect the contamination,
+and then decontaminate your data. You can detect contamination using
+heuristics like n-gram overlapping and perplexity:
+N-gram overlapping
+For example, if a sequence of 13 tokens in an evaluation sample is
+also in the training data, the model has likely seen this evaluation
+sample during training. This evaluation sample is considered dirty.
+Perplexity
+Recall that perplexity measures how difficult it is for a model to
+predict a given text. If a model’s perplexity on evaluation data is
+unusually low, meaning the model can easily predict the text, it’s
+possible that the model has seen this data before during training.",4e5a0a1f
+best practices for evaluating generative AI responses,"Best practices involve clearly stating what constitutes a good response, considering multiple criteria for evaluation, and recognizing that a correct response may not always be a good one in practical applications.",expert,"When creating the evaluation guideline, it’s important to define not only
+what the application should do, but also what it shouldn’t do. For example,
+if you build a customer support chatbot, should this chatbot answer
+questions unrelated to your product, such as about an upcoming election? If
+not, you need to define what inputs are out of the scope of your application,
+how to detect them, and how your application should respond to them.
+Define evaluation criteria
+Often, the hardest part of evaluation isn’t determining whether an output is
+good, but rather what good means. In retrospect of one year of deploying
+generative AI applications, LinkedIn shared that the first hurdle was in
+creating an evaluation guideline. A correct response is not always a good
+response. For example, for their AI-powered Job Assessment application,
+the response “You are a terrible fit” might be correct but not helpful, thus
+making it a bad response. A good response should explain the gap between
+this job’s requirements and the candidate’s background, and what the
+candidate can do to close this gap.
+Before building your application, think about what makes a good response.
+LangChain’s State of AI 2023 found that, on average, their users used 2.3
+different types of feedback (criteria) to evaluate an application. For
+example, for a customer support application, a good response might be
+defined using three criteria:",571b56b8
+limitations of public benchmarks in AI evaluation,"The text warns that while public benchmarks can filter out poor models, they may not identify the best fit for specific applications due to issues like contamination and unclear aggregation processes.",expert,"evolved from traditional NLP, including fluency, coherence, and
+faithfulness.
+To help answer the question of whether to host a model or to use a model
+API, this chapter outlined the pros and cons of each approach along seven
+axes, including data privacy, data lineage, performance, functionality,
+control, and cost. This decision, like all the build versus buy decisions, is
+unique to every team, depending not only on what the team needs but also
+on what the team wants.
+This chapter also explored the thousands of available public benchmarks.
+Public benchmarks can help you weed out bad models, but they won’t help
+you find the best models for your applications. Public benchmarks are also
+likely contaminated, as their data is included in the training data of many
+models. There are public leaderboards that aggregate multiple benchmarks
+to rank models, but how benchmarks are selected and aggregated is not a
+clear process. The lessons learned from public leaderboards are helpful for
+model selection, as model selection is akin to creating a private leaderboard
+to rank models based on your needs.
+This chapter ends with how to use all the evaluation techniques and criteria
+discussed in the last chapter and how to create an evaluation pipeline for
+your application. No perfect evaluation method exists. It’s impossible to
+capture the ability of a high-dimensional system using one- or few-
+dimensional scores. Evaluating modern AI systems has many limitations",e53ab75a
+evaluating generative AI models,"The text discusses how functional correctness is a key evaluation metric for generative AI in coding tasks, contrasting it with the challenges of evaluating more open-ended applications.",intermediate,"EVALUATION-DRIVEN DEVELOPMENT
+While some companies chase the latest hype, sensible business decisions
+are still being made based on returns on investment, not hype. Applications
+should demonstrate value to be deployed. As a result, the most common
+enterprise applications in production are those with clear evaluation criteria:
+Recommender systems are common because their successes can be
+1
+evaluated by an increase in engagement or purchase-through rates.
+The success of a fraud detection system can be measured by how much
+money is saved from prevented frauds.
+Coding is a common generative AI use case because, unlike other
+generation tasks, generated code can be evaluated using functional
+correctness.
+Even though foundation models are open-ended, many of their use cases
+are close-ended, such as intent classification, sentiment analysis, next-
+action prediction, etc. It’s much easier to evaluate classification tasks
+than open-ended tasks.
+While the evaluation-driven development approach makes sense from a
+business perspective, focusing only on applications whose outcomes can be
+measured is similar to looking for the lost key under the lamppost (at night).
+It’s easier to do, but it doesn’t mean we’ll find the key. We might be missing
+out on many potentially game-changing applications because there is no
+easy way to evaluate them.",80fcbdd3
+measuring safety and factual consistency in generative models,"Evaluating safety includes assessing biases and toxicity in AI outputs, while factual consistency is crucial to prevent harmful misinformation in applications.",expert,"and coherence, then, were important metrics to track. However, as language
+models’ generation capabilities have improved, AI-generated texts have
+become nearly indistinguishable from human-generated texts. Fluency and
+2
+coherence become less important. However, these metrics can still be
+useful for weaker models or for applications involving creative writing and
+low-resource languages. Fluency and coherence can be evaluated using AI
+as a judge—asking an AI model how fluent and coherent a text is—or using
+perplexity, as discussed in Chapter 3.
+Generative models, with their new capabilities and new use cases, have new
+issues that require new metrics to track. The most pressing issue is
+undesired hallucinations. Hallucinations are desirable for creative tasks, not
+for tasks that depend on factuality. A metric that many application
+developers want to measure is factual consistency. Another issue commonly
+tracked is safety: can the generated outputs cause harm to users and
+society? Safety is an umbrella term for all types of toxicity and biases.
+There are many other measurements that an application developer might
+care about. For example, when I built my AI-powered writing assistant, I
+cared about controversiality, which measures content that isn’t necessarily
+harmful but can cause heated debates. Some people might care about
+friendliness, positivity, creativity, or conciseness, but I won’t be able to go
+into them all. This section focuses on how to evaluate factual consistency
+and safety. Factual inconsistency can cause harm too, so it’s technically
+under safety. However, due to its scope, I put it in its own section. The",bd3a7ced
+How to test AI model's instruction-following ability?,The chapter emphasizes the importance of evaluating a model's instruction-following capability by analyzing its response to structured output requests and adherence to specific constraints.,beginner,"Let’s say you ask the model to detect the sentiment in a tweet and output
+NEGATIVE, POSITIVE, or NEUTRAL. The model seems to understand
+the sentiment of each tweet, but it generates unexpected outputs such as
+HAPPY and ANGRY. This means that the model has the domain-specific
+capability to do sentiment analysis on tweets, but its instruction-following
+capability is poor.
+Instruction-following capability is essential for applications that require
+structured outputs, such as in JSON format or matching a regular
+6
+expression (regex). For example, if you ask a model to classify an input as
+A, B, or C, but the model outputs “That’s correct”, this output isn’t very
+helpful and will likely break downstream applications that expect only A, B,
+or C.
+But instruction-following capability goes beyond generating structured
+outputs. If you ask a model to use only words of at most four characters, the
+model’s outputs don’t have to be structured, but they should still follow the
+instruction to contain only words of at most four characters. Ello, a startup
+that helps kids read better, wants to build a system that automatically
+generates stories for a kid using only the words that they can understand.
+The model they use needs the ability to follow the instruction to work with
+a limited pool of words.
+Instruction-following capability isn’t straightforward to define or measure,
+as it can be easily conflated with domain-specific capability or generation",3c1fcdff
+how to create evaluation sets for AI models,It stresses the necessity of having multiple evaluation sets that represent various data slices to effectively gauge a system's performance across different segments of users and inputs.,intermediate,"outperforms model B on each subgroup but underperforms model B
+overall.
+a
+Table 4-6. An example of Simpson’s paradox.
+Group 1 Group 2 Overall
+Model A 93% (81/87) 73% (192/263) 78% (273/350)
+Model B 87% (234/270) 69% (55/80) 83% (289/350)
+a
+I also used this example in Designing Machine Learning Systems. Numbers from Charig
+et al., “Comparison of Treatment of Renal Calculi by Open Surgery, Percutaneous
+Nephrolithotomy, and Extracorporeal Shockwave Lithotripsy”, British Medical Journal
+(Clinical Research Edition) 292, no. 6524 (March 1986): 879–82.
+You should have multiple evaluation sets to represent different data slices.
+You should have one set that represents the distribution of the actual
+production data to estimate how the system does overall. You can slice your
+data based on tiers (paying users versus free users), traffic sources (mobile
+versus web), usage, and more. You can have a set consisting of the
+examples for which the system is known to frequently make mistakes. You
+can have a set of examples where users frequently make mistakes—if typos
+are common in production, you should have evaluation examples that
+contain typos. You might want an out-of-scope evaluation set, inputs your
+application isn’t supposed to engage with, to make sure that your
+application handles them appropriately.",e2faee34
+what benchmarks to use for evaluating LLMs,"It mentions Eleuther's lm-evaluation-harness, noting ideal examples ranging from 300 to over 1,000, which are critical for assessing model effectiveness reliably.",intermediate,"As a reference, among evaluation benchmarks in Eleuther’s lm-evaluation-
+harness, the median number of examples is 1,000, and the average is 2,159.
+The organizers of the Inverse Scaling prize suggested that 300 examples is
+the absolute minimum and they would prefer at least 1,000, especially if the
+examples are being synthesized (McKenzie et al., 2023).
+Evaluate your evaluation pipeline
+Evaluating your evaluation pipeline can help with both improving your
+pipeline’s reliability and finding ways to make your evaluation pipeline
+more efficient. Reliability is especially important with subjective evaluation
+methods such as AI as a judge.
+Here are some questions you should be asking about the quality of your
+evaluation pipeline:
+Is your evaluation pipeline getting you the right signals?
+Do better responses indeed get higher scores? Do better evaluation
+metrics lead to better business outcomes?
+How reliable is your evaluation pipeline?
+If you run the same pipeline twice, do you get different results? If
+you run the pipeline multiple times with different evaluation datasets,
+what would be the variance in the evaluation results? You should aim
+to increase reproducibility and reduce variance in your evaluation",265ae24b
+correlation scores of AI benchmarks,"The chapter highlights the Pearson correlation scores among six benchmarks, indicating strong correlations among WinoGrande, MMLU, and ARC-C due to their focus on reasoning capabilities.",beginner,"Table 4-5 shows the Pearson correlation scores among the six benchmarks
+used on Hugging Face’s leaderboard, computed in January 2024 by Balázs
+Galambosi. The three benchmarks WinoGrande, MMLU, and ARC-C are
+strongly correlated, which makes sense since they all test reasoning
+capabilities. TruthfulQA is only moderately correlated to other benchmarks,
+suggesting that improving a model’s reasoning and math capabilities
+doesn’t always improve its truthfulness.
+Table 4-5. The correlation between the six benchmarks used on Hugging Face’s leaderboard, compute
+ARC-C HellaSwag MMLU Truth
+ARC-C 1.0000 0.4812 0.8672 0.480
+HellaSwag 0.4812 1.0000 0.6105 0.480
+MMLU 0.8672 0.6105 1.0000 0.550
+TruthfulQA 0.4809 0.4228 0.5507 1.000
+WinoGrande 0.8856 0.4842 0.9011 0.455
+GSM-8K 0.7438 0.3547 0.7936 0.500
+The results from all the selected benchmarks need to be aggregated to rank
+models. As of this writing, Hugging Face averages a model’s scores on all
+these benchmarks to get the final score to rank that model. Averaging means",a3622fc5
+AI response length requirements,"The chapter specifies how to set constraints on response length, such as defining minimum and maximum numbers of words, sentences, and paragraphs.",beginner,"Instruction
+Instruction Description
+group
+Length Number words Answer with at least/around/at
+constraints most {N} words.
+Length Number sentences Answer with at least/around/at
+constraints most {N} sentences.
+Length Number There should be {N} paragraphs.
+constraints paragraphs + first Paragraphs and only paragraphs
+word in i-th are separated from each other by
+paragraph two line breaks. The {i}-th
+paragraph must start with word
+{first_word}.
+Detectable Postscript At the end of your response,
+content please explicitly add a postscript
+starting with {postscript marker}.
+Detectable Number The response must contain at least
+content placeholder {N} placeholders represented by
+square brackets, such as [address].
+Detectable Number bullets Your answer must contain exactly
+format {N} bullet points. Use the",f2dbd741
+benchmark selection criteria for AI leaderboards,"The chapter mentions that while leaderboard developers thoughtfully select benchmarks, their decision-making processes are not always transparent to users, leading to variability across different leaderboards.",expert,"For inspiration on how to create your own leaderboard from public
+benchmarks, it’s useful to look into how public leaderboards do so.
+Public leaderboards
+Many public leaderboards rank models based on their aggregated
+performance on a subset of benchmarks. These leaderboards are immensely
+helpful but far from being comprehensive. First, due to the compute
+constraint—evaluating a model on a benchmark requires compute—most
+leaderboards can incorporate only a small number of benchmarks. Some
+leaderboards might exclude an important but expensive benchmark. For
+example, HELM (Holistic Evaluation of Language Models) Lite left out an
+information retrieval benchmark (MS MARCO, Microsoft Machine
+Reading Comprehension) because it’s expensive to run. Hugging Face
+opted out of HumanEval due to its large compute requirements—you need
+to generate a lot of completions.
+When Hugging Face first launched Open LLM Leaderboard in 2023, it
+consisted of four benchmarks. By the end of that year, they extended it to
+six benchmarks. A small set of benchmarks is not nearly enough to
+represent the vast capabilities and different failure modes of foundation
+models.
+Additionally, while leaderboard developers are generally thoughtful about
+how they select benchmarks, their decision-making process isn’t always
+clear to users. Different leaderboards often end up with different",1ed6d1d2
+how to create evaluation guidelines for AI systems,The text emphasizes that establishing clear evaluation guidelines is crucial to avoid ambiguous scoring and ensures that misleading responses can be identified effectively.,beginner,"Bob: Is the concept an animal?
+Alice: No.
+Bob: Is the concept a plant?
+Alice: Yes.
+Bob: Does it grow in the ocean?
+Alice: No.
+Bob: Does it grow in a tree?
+Alice: Yes.
+Bob: Is it an apple?
+[Bob’s guess is correct, and the task is
+completed.]
+Step 2. Create an Evaluation Guideline
+Creating a clear evaluation guideline is the most important step of the
+evaluation pipeline. An ambiguous guideline leads to ambiguous scores that
+can be misleading. If you don’t know what bad responses look like, you
+won’t be able to catch them.",9f8f293c
+evaluating efficiency in AI model performance,"Efficiency in AI models can be evaluated through metrics like runtime and memory usage, in addition to functional correctness, to ensure a model is not just accurate but also practical for real-world applications.",expert,"understanding are domain-specific capabilities. A model’s domain-specific
+capabilities are constrained by its configuration (such as model architecture
+and size) and training data. If a model never saw Latin during its training
+process, it won’t be able to understand Latin. Models that don’t have the
+capabilities your application requires won’t work for you.
+To evaluate whether a model has the necessary capabilities, you can rely on
+domain-specific benchmarks, either public or private. Thousands of public
+benchmarks have been introduced to evaluate seemingly endless
+capabilities, including code generation, code debugging, grade school math,
+science knowledge, common sense, reasoning, legal knowledge, tool use,
+game playing, etc. The list goes on.
+Domain-specific capabilities are commonly evaluated using exact
+evaluation. Coding-related capabilities are typically evaluated using
+functional correctness, as discussed in Chapter 3. While functional
+correctness is important, it might not be the only aspect that you care about.
+You might also care about efficiency and cost. For example, would you
+want a car that runs but consumes an excessive amount of fuel? Similarly, if
+an SQL query generated by your text-to-SQL model is correct but takes too
+long or requires too much memory to run, it might not be usable.
+Efficiency can be exactly evaluated by measuring runtime or memory
+usage. BIRD-SQL (Li et al., 2023) is an example of a benchmark that takes
+into account not only the generated query’s execution accuracy but also its",8c746a19
+what are open weights in AI models?,"Open weights refer to model weights that are publicly available, without necessarily providing access to the training data, which can be vital for auditing and ethical considerations.",beginner,"model. Some use cases also required access to the training data for auditing
+purposes, for example, to make sure that the model wasn’t trained on
+10
+compromised or illegally acquired data.
+To signal whether the data is also open, the term “open weight” is used for
+models that don’t come with open data, whereas the term “open model” is
+used for models that come with open data.
+NOTE
+Some people argue that the term open source should be reserved only for fully open models. In this
+book, for simplicity, I use open source to refer to all models whose weights are made public,
+regardless of their training data’s availability and licenses.
+As of this writing, the vast majority of open source models are open weight
+only. Model developers might hide training data information on purpose, as
+this information can open model developers to public scrutiny and potential
+lawsuits.
+Another important attribute of open source models is their licenses. Before
+foundation models, the open source world was confusing enough, with so
+many different licenses, such as MIT (Massachusetts Institute of
+Technology), Apache 2.0, GNU General Public License (GPL), BSD
+(Berkely Software Distribution), Creative Commons, etc. Open source
+models made the licensing situation worse. Many models are released under
+their own unique licenses. For example, Meta released Llama 2 under the",cb153bba
+how to evaluate generated text quality,"The chapter outlines key evaluation metrics for generated text quality including fluency, coherence, and task-specific measures like faithfulness and relevance.",beginner,"Generation Capability
+AI was used to generate open-ended outputs long before generative AI
+became a thing. For decades, the brightest minds in NLP (natural language
+processing) have been working on how to evaluate the quality of open-
+ended outputs. The subfield that studies open-ended text generation is
+called NLG (natural language generation). NLG tasks in the early 2010s
+included translation, summarization, and paraphrasing.
+Metrics used to evaluate the quality of generated texts back then included
+fluency and coherence. Fluency measures whether the text is grammatically
+correct and natural-sounding (does this sound like something written by a
+fluent speaker?). Coherence measures how well-structured the whole text is
+(does it follow a logical structure?). Each task might also have its own
+metrics. For example, a metric a translation task might use is faithfulness:
+how faithful is the generated translation to the original sentence? A metric
+that a summarization task might use is relevance: does the summary focus
+on the most important aspects of the source document? (Li et al., 2022).
+Some early NLG metrics, including faithfulness and relevance, have been
+repurposed, with significant modifications, to evaluate the outputs of
+foundation models. As generative models improved, many issues of early
+NLG systems went away, and the metrics used to track these issues became
+less important. In the 2010s, generated texts didn’t sound natural. They
+were typically full of grammatical errors and awkward sentences. Fluency",b8627175
+how to reduce latency when using AI models,"You can manage latency by optimizing prompts for conciseness, setting stopping conditions for generation, and employing other optimization techniques discussed in previous chapters.",intermediate,"Latency depends not only on the underlying model but also on each prompt
+and sampling variables. Autoregressive language models typically generate
+outputs token by token. The more tokens it has to generate, the higher the
+total latency. You can control the total latency observed by users by careful
+prompting, such as instructing the model to be concise, setting a stopping
+condition for generation (discussed in Chapter 2), or other optimization
+techniques (discussed in Chapter 9).
+TIP
+When evaluating models based on latency, it’s important to differentiate between the must-have and
+the nice-to-have. If you ask users if they want lower latency, nobody will ever say no. But high
+latency is often an annoyance, not a deal breaker.
+If you use model APIs, they typically charge by tokens. The more input and
+output tokens you use, the more expensive it is. Many applications then try
+to reduce the input and output token count to manage cost.
+If you host your own models, your cost, outside engineering cost, is
+compute. To make the most out of the machines they have, many people
+choose the largest models that can fit their machines. For example, GPUs
+usually come with 16 GB, 24 GB, 48 GB, and 80 GB of memory.
+Therefore, many popular models are those that max out these memory
+configurations. It’s not a coincidence that many models today have 7 billion
+or 65 billion parameters.",b9617461
+why do monopolies harm consumers?,"Monopolies lead to increased prices and reduced output, which results in a loss of consumer surplus as noted in option D of the question.",beginner,"Question: One of the reasons that the government discourages and
+regulates monopolies is that
+(A) Producer surplus is lost and consumer surplus is gained.
+(B) Monopoly prices ensure productive efficiency but cost society
+allocative efficiency.
+(C) Monopoly firms do not engage in significant research and
+development.
+(D) Consumer surplus is lost with higher prices and lower levels of
+output.
+Label: (D)
+A multiple-choice question (MCQ) might have one or more correct
+answers. A common metric is accuracy—how many questions the model
+gets right. Some tasks use a point system to grade a model’s performance—
+harder questions are worth more points. You can also use a point system
+when there are multiple correct options. A model gets one point for each
+option it gets right.
+Classification is a special case of multiple choice where the choices are the
+same for all questions. For example, for a tweet sentiment classification
+task, each question has the same three choices: NEGATIVE, POSITIVE,
+and NEUTRAL. Metrics for classification tasks, other than accuracy,
+include F1 scores, precision, and recall.",9a4bcdf3
+How does data lineage affect AI model development?,"Data lineage influences decisions about adopting open source versus proprietary models, alongside navigating copyright concerns related to data usage in AI training.",expert,"15
+company’s secrets. It’s unclear how Samsung discovered this leak and
+how the leaked information was used against Samsung. However, the
+incident was serious enough for Samsung to ban ChatGPT in May 2023.
+Some countries have laws that forbid sending certain data outside their
+borders. If a model API provider wants to serve these use cases, they will
+have to set up servers in these countries.
+If you use a model API, there’s a risk that the API provider will use your
+data to train its models. Even though most model API providers claim they
+don’t do that, their policies can change. In August 2023, Zoom faced a
+backlash after people found out the company had quietly changed its terms
+of service to let Zoom use users’ service-generated data, including product
+usage data and diagnostics data, to train its AI models.
+What’s the problem with people using your data to train their models?
+While research in this area is still sparse, some studies suggest that AI
+models can memorize their training samples. For example, it’s been found
+that Hugging Face’s StarCoder model memorizes 8% of its training set.
+These memorized samples can be accidentally leaked to users or
+intentionally exploited by bad actors, as demonstrated in Chapter 5.
+Data lineage and copyright
+Data lineage and copyright concerns can steer a company in many
+directions: toward open source models, toward proprietary models, or away",624fdda5
+open source vs proprietary model performance,"The chapter outlines that while the performance gap between open source models and proprietary models is decreasing, strong proprietary models are likely to remain superior. Open source models may still be viable for many applications despite this lag.",beginner,"Figure 4-7. The gap between open source models and proprietary models is decreasing on the
+MMLU benchmark. Image by Maxime Labonne.
+For this reason, it’s likely that the strongest open source model will lag
+behind the strongest proprietary models for the foreseeable future.
+However, for many use cases that don’t need the strongest models, open
+source models might be sufficient.
+Another reason that might cause open source models to lag behind is that
+open source developers don’t receive feedback from users to improve their
+models, the way commercial models do. Once a model is open sourced,
+model developers have no idea how the model is being used, and how well
+the model works in the wild.",249f08da
+techniques for detecting factual inconsistency in language models,"The chapter introduces various techniques developed to detect factual inconsistency, while noting that comprehensive coverage of these methods is beyond the scope of the chapter.",expert,"techniques used to measure these qualities can give you a rough idea of how
+to evaluate other qualities you care about.
+Factual consistency
+Due to factual inconsistency’s potential for catastrophic consequences,
+many techniques have been and will be developed to detect and measure it.
+It’s impossible to cover them all in one chapter, so I’ll go over only the
+broad strokes.
+The factual consistency of a model’s output can be verified under two
+settings: against explicitly provided facts (context) or against open
+knowledge:
+Local factual consistency
+The output is evaluated against a context. The output is considered
+factually consistent if it’s supported by the given context. For
+example, if the model outputs “the sky is blue” and the given context
+says that the sky is purple, this output is considered factually
+inconsistent. Conversely, given this context, if the model outputs “the
+sky is purple”, this output is factually consistent.
+Local factual consistency is important for tasks with limited scopes
+such as summarization (the summary should be consistent with the
+original document), customer support chatbots (the chatbot’s
+responses should be consistent with the company’s policies), and",7f0e2336
+What are the implications of a model's data lineage in AI training?,"Understanding a model's data lineage is critical as it affects compliance with licensing terms, particularly regarding whether a model can be trained on outputs from another model without violating rules.",expert,"4
+Textual entailment is also known as natural language inference (NLI).
+5
+Anthropic has a nice tutorial on using Claude for content moderation.
+6
+Structured outputs are discussed in depth in Chapter 2.
+7
+There haven’t been many comprehensive studies of the distribution of instructions people are using
+foundation models for. LMSYS published a study of one million conversations on Chatbot Arena, but
+these conversations aren’t grounded in real-world applications. I’m waiting for studies from model
+providers and API providers.
+8
+The knowledge part is tricky, as the roleplaying model shouldn’t say things that Jackie Chan doesn’t
+know. For example, if Jackie Chan doesn’t speak Vietnamese, you should check that the roleplaying
+model doesn’t speak Vietnamese. The “negative knowledge” check is very important for gaming. You
+don’t want an NPC to accidentally give players spoilers.
+9
+However, the electricity cost might be different, depending on the usage.
+0
+Another argument for making training data public is that since models are likely trained on data
+scraped from the internet, which was generated by the public, the public should have the right to
+access the models’ training data.
+1
+In spirit, this restriction is similar to the Elastic License that forbids companies from offering the
+open source version of Elastic as a hosted service and competing with the Elasticsearch platform.
+2
+It’s possible that a model’s output can’t be used to improve other models, even if its license allows
+that. Consider model X that is trained on ChatGPT’s outputs. X might have a license that allows this,
+but if ChatGPT doesn’t, then X violated ChatGPT’s terms of use, and therefore, X can’t be used. This
+is why knowing a model’s data lineage is so important.
+3
+For example, as of this writing, you can access GPT-4 models only via OpenAI or Azure. Some
+might argue that being able to provide services on top of OpenAI’s proprietary models is a key",73a9fbe8
+best practices for reporting model performance,"The chapter emphasizes the importance of disclosing the percentage of benchmark data used in training when reporting model performance, along with results on overall and clean samples of the benchmark.",expert,"The n-gram overlapping approach is more accurate but can be time-
+consuming and expensive to run because you have to compare each
+benchmark example with the entire training data. It’s also impossible
+without access to the training data. The perplexity approach is less accurate
+but much less resource-intensive.
+In the past, ML textbooks advised removing evaluation samples from the
+training data. The goal is to keep evaluation benchmarks standardized so
+that we can compare different models. However, with foundation models,
+most people don’t have control over training data. Even if we have control
+over training data, we might not want to remove all benchmark data from
+the training data, because high-quality benchmark data can help improve
+the overall model performance. Besides, there will always be benchmarks
+created after models are trained, so there will always be contaminated
+evaluation samples.
+For model developers, a common practice is to remove benchmarks they
+care about from their training data before training their models. Ideally,
+when reporting your model performance on a benchmark, it’s helpful to
+disclose what percentage of this benchmark data is in your training data,
+and what the model’s performance is on both the overall benchmark and the
+clean samples of the benchmark. Sadly, because detecting and removing
+contamination takes effort, many people find it easier to just skip it.",3ea54e1e
+advanced techniques for evaluating LLMs,"The text suggests using diverse evaluation criteria, including out-of-scope inputs and error-prone examples, to rigorously assess the robustness and reliability of large language models.",expert,"outperforms model B on each subgroup but underperforms model B
+overall.
+a
+Table 4-6. An example of Simpson’s paradox.
+Group 1 Group 2 Overall
+Model A 93% (81/87) 73% (192/263) 78% (273/350)
+Model B 87% (234/270) 69% (55/80) 83% (289/350)
+a
+I also used this example in Designing Machine Learning Systems. Numbers from Charig
+et al., “Comparison of Treatment of Renal Calculi by Open Surgery, Percutaneous
+Nephrolithotomy, and Extracorporeal Shockwave Lithotripsy”, British Medical Journal
+(Clinical Research Edition) 292, no. 6524 (March 1986): 879–82.
+You should have multiple evaluation sets to represent different data slices.
+You should have one set that represents the distribution of the actual
+production data to estimate how the system does overall. You can slice your
+data based on tiers (paying users versus free users), traffic sources (mobile
+versus web), usage, and more. You can have a set consisting of the
+examples for which the system is known to frequently make mistakes. You
+can have a set of examples where users frequently make mistakes—if typos
+are common in production, you should have evaluation examples that
+contain typos. You might want an out-of-scope evaluation set, inputs your
+application isn’t supposed to engage with, to make sure that your
+application handles them appropriately.",6ec99943
+how to evaluate AI applications,"The chapter highlights the importance of establishing specific evaluation criteria for AI applications, focusing on domain-specific capability, generation capability, instruction-following capability, and cost and latency to guide effective evaluations.",beginner,"I believe that evaluation is the biggest bottleneck to AI adoption. Being able
+to build reliable evaluation pipelines will unlock many new applications.
+An AI application, therefore, should start with a list of evaluation criteria
+specific to the application. In general, you can think of criteria in the
+following buckets: domain-specific capability, generation capability,
+instruction-following capability, and cost and latency.
+Imagine you ask a model to summarize a legal contract. At a high level,
+domain-specific capability metrics tell you how good the model is at
+understanding legal contracts. Generation capability metrics measure how
+coherent or faithful the summary is. Instruction-following capability
+determines whether the summary is in the requested format, such as
+meeting your length constraints. Cost and latency metrics tell you how
+much this summary will cost you and how long you will have to wait for it.
+The last chapter started with an evaluation approach and discussed what
+criteria a given approach can evaluate. This section takes a different angle:
+given a criterion, what approaches can you use to evaluate it?
+Domain-Specific Capability
+To build a coding agent, you need a model that can write code. To build an
+application to translate from Latin to English, you need a model that
+understands both Latin and English. Coding and English–Latin",78bcd27e
+mean win rate in model evaluation,"The chapter introduces the concept of mean win rate as an alternative to average scoring, focusing on a model's performance relative to others across different scenarios, which can offer a clearer assessment of capability.",intermediate,"treating all benchmark scores equally, i.e., treating an 80% score on
+TruthfulQA the same as an 80% score on GSM-8K, even if an 80% score
+on TruthfulQA might be much harder to achieve than an 80% score on
+GSM-8K. This also means giving all benchmarks the same weight, even if,
+for some tasks, truthfulness might weigh a lot more than being able to solve
+grade school math problems.
+HELM authors, on the other hand, decided to shun averaging in favor of
+mean win rate, which they defined as “the fraction of times a model obtains
+a better score than another model, averaged across scenarios”.
+While public leaderboards are useful to get a sense of models’ broad
+performance, it’s important to understand what capabilities a leaderboard is
+trying to capture. A model that ranks high on a public leaderboard will
+likely, but far from always, perform well for your application. If you want a
+model for code generation, a public leaderboard that doesn’t include a code
+generation benchmark might not help you as much.
+Custom leaderboards with public benchmarks
+When evaluating models for a specific application, you’re basically creating
+a private leaderboard that ranks models based on your evaluation criteria.
+The first step is to gather a list of benchmarks that evaluate the capabilities
+important to your application. If you want to build a coding agent, look at
+code-related benchmarks. If you build a writing assistant, look into creative",b73ca037
+costs of hosting AI models,"The chapter outlines the costs associated with self-hosting models, highlighting the time, talent, and engineering effort required, which can be alleviated by using model hosting services.",beginner,"Using model APIs Self-hosting models
+evaluation, and
+interpretability
+Cost
+API cost Talent, time, engineering
+effort to optimize, host,
+maintain (can be
+mitigated by using model
+hosting services)
+Finetuning
+Can only finetune Can finetune, quantize,
+models that model and optimize models (if
+providers let you their licenses allow), but
+it can be hard to do so
+Control,
+Rate limits Easier to inspect changes
+access, and
+Risk of losing access in open source models
+transparency
+to the model You can freeze a model
+Lack of transparency to maintain its access, but
+in model changes and you’re responsible for
+versioning",8aeabb11
+best practices for evaluating AI models,The chapter outlines an iterative evaluation workflow that helps teams determine whether to use model APIs or self-hosted models based on performance needs.,beginner,"Figure 4-5. An overview of the evaluation workflow to evaluate models for your application.
+These four steps are iterative—you might want to change the decision from
+a previous step with newer information from the current step. For example,
+you might initially want to host open source models. However, after public
+and private evaluation, you might realize that open source models can’t
+achieve the level of performance you want and have to switch to
+commercial APIs.
+Chapter 10 discusses monitoring and collecting user feedback. The rest of
+this chapter will discuss the first three steps. First, let’s discuss a question
+that most teams will visit more than once: to use model APIs or to host
+models themselves. We’ll then continue to how to navigate the dizzying
+number of public benchmarks and why you can’t trust them. This will set
+the stage for the last section in the chapter. Because public benchmarks",91f34b96
+what are essential functionalities for AI models?,"The chapter outlines key functionalities like scalability, function calling, structured outputs, and output guardrails as crucial for AI models to function effectively in real-world applications.",beginner,"Functionality
+Many functionalities are needed around a model to make it work for a use
+case. Here are some examples of these functionalities:
+Scalability: making sure the inference service can support your
+application’s traffic while maintaining the desirable latency and cost.
+Function calling: giving the model the ability to use external tools, which
+is essential for RAG and agentic use cases, as discussed in Chapter 6.
+Structured outputs, such as asking models to generate outputs in JSON
+format.
+Output guardrails: mitigating risks in the generated responses, such as
+making sure the responses aren’t racist or sexist.
+Many of these functionalities are challenging and time-consuming to
+implement, which makes many companies turn to API providers that
+provide the functionalities they want out of the box.
+The downside of using a model API is that you’re restricted to the
+functionalities that the API provides. A functionality that many use cases
+need is logprobs, which are very useful for classification tasks, evaluation,
+and interpretability. However, commercial model providers might be
+hesitant to expose logprobs for fear of others using logprobs to replicate
+their models. In fact, many model APIs don’t expose logprobs or expose
+only limited logprobs.",f5e81205
+how to rank LLMs based on role performance,"The chapter provides a methodology for assessing LLMs by creating and comparing their outputs against defined role characteristics and quality criteria, using Python for organization.",beginner,"System Instruction:
+You are a role−playing performance comparison
+assistant. You should rank the models based on
+the role characteristics and text quality of
+their responses. The rankings are then output
+using Python dictionaries and lists.
+User Prompt:
+The models below are to play the role of
+‘‘{role_name}’’. The role description of
+‘‘{role_name}’’ is
+‘‘{role_description_and_catchphrases}’’. I
+need to rank the following models based on the
+two criteria below:
+1. Which one has more pronounced role speaking
+style, and speaks more in line with the role
+description. The more distinctive the speaking
+style, the better.
+2. Which one’s output contains more knowledge
+and memories related to the role; the richer,
+the better. (If the question contains
+reference answers, then the role−specific",d3c487f4
+best practices for collecting user feedback on AI performance,"The text suggests considering user feedback as an essential evaluation method, correlating it with other metrics, and utilizing it actively during production for continuous improvement.",expert,"Use automatic metrics as much as possible, but don’t be afraid to fall back
+on human evaluation, even in production. Having human experts manually
+evaluate a model’s quality is a long-standing practice in AI. Given the
+challenges of evaluating open-ended responses, many teams are looking at
+human evaluation as the North Star metric to guide their application
+development. Each day, you can use human experts to evaluate a subset of
+your application’s outputs that day to detect any changes in the application’s
+performance or unusual patterns in usage. For example, LinkedIn developed
+a process to manually evaluate up to 500 daily conservations with their AI
+systems.
+Consider evaluation methods to be used not just during experimentation but
+also during production. During experimentation, you might have reference
+data to compare your application’s outputs to, whereas, in production,
+reference data might not be immediately available. However, in production,
+you have actual users. Think about what kinds of feedback you want from
+users, how user feedback correlates to other evaluation metrics, and how to
+use user feedback to improve your application. How to collect user
+feedback is discussed in Chapter 10.
+Annotate evaluation data
+Curate a set of annotated examples to evaluate your application. You need
+annotated data to evaluate each of your system’s components and each
+criterion, for both turn-based and task-based evaluation. Use actual",d1eb205d
+NLG evaluation metrics examples,"It details various metrics from the NLG field, emphasizing fluency, coherence, and specific metrics tailored for tasks like translation and summarization.",intermediate,"Generation Capability
+AI was used to generate open-ended outputs long before generative AI
+became a thing. For decades, the brightest minds in NLP (natural language
+processing) have been working on how to evaluate the quality of open-
+ended outputs. The subfield that studies open-ended text generation is
+called NLG (natural language generation). NLG tasks in the early 2010s
+included translation, summarization, and paraphrasing.
+Metrics used to evaluate the quality of generated texts back then included
+fluency and coherence. Fluency measures whether the text is grammatically
+correct and natural-sounding (does this sound like something written by a
+fluent speaker?). Coherence measures how well-structured the whole text is
+(does it follow a logical structure?). Each task might also have its own
+metrics. For example, a metric a translation task might use is faithfulness:
+how faithful is the generated translation to the original sentence? A metric
+that a summarization task might use is relevance: does the summary focus
+on the most important aspects of the source document? (Li et al., 2022).
+Some early NLG metrics, including faithfulness and relevance, have been
+repurposed, with significant modifications, to evaluate the outputs of
+foundation models. As generative models improved, many issues of early
+NLG systems went away, and the metrics used to track these issues became
+less important. In the 2010s, generated texts didn’t sound natural. They
+were typically full of grammatical errors and awkward sentences. Fluency",cabaa12d
+open source vs commercial AI models,"The text outlines the differences between open source models and commercial models, noting that many developers release weaker models openly while keeping stronger models behind paywalls.",beginner,"After developing a model, a developer can choose to open source it, make it
+accessible via an API, or both. Many model developers are also model
+service providers. Cohere and Mistral open source some models and
+provide APIs for some. OpenAI is typically known for their commercial
+models, but they’ve also open sourced models (GPT-2, CLIP). Typically,
+model providers open source weaker models and keep their best models
+behind paywalls, either via APIs or to power their products.
+Model APIs can be available through model providers (such as OpenAI and
+Anthropic), cloud service providers (such as Azure and GCP [Google Cloud
+Platform]), or third-party API providers (such as Databricks Mosaic,
+Anyscale, etc.). The same model can be available through different APIs
+with different features, constraints, and pricings. For example, GPT-4 is
+available through both OpenAI and Azure APIs. There might be slight
+differences in the performance of the same model provided through
+different APIs, as different APIs might use different techniques to optimize
+this model, so make sure to run thorough tests when you switch between
+model APIs.
+Commercial models are only accessible via APIs licensed by the model
+13
+developers. Open source models can be supported by any API provider,
+allowing you to pick and choose the provider that works best for you. For
+commercial model providers, models are their competitive advantages. For
+API providers that don’t have their own models, APIs are their competitive",a5d55c7e
+evaluating AI with multiple-choice questions,"It describes how non-coding abilities can be assessed using close-ended tasks, particularly multiple-choice questions, which simplify verification and consistency in evaluation.",expert,"efficiency, which is measured by comparing the runtime of the generated
+query with the runtime of the ground truth SQL query.
+You might also care about code readability. If the generated code runs but
+nobody can understand it, it will be challenging to maintain the code or
+incorporate it into a system. There’s no obvious way to evaluate code
+readability exactly, so you might have to rely on subjective evaluation, such
+as using AI judges.
+Non-coding domain capabilities are often evaluated with close-ended tasks,
+such as multiple-choice questions. Close-ended outputs are easier to verify
+and reproduce. For example, if you want to evaluate a model’s ability to do
+math, an open-ended approach is to ask the model to generate the solution
+to a given problem. A close-ended approach is to give the model several
+options and let it pick the correct one. If the expected answer is option C
+and the model outputs option A, the model is wrong.
+This is the approach that most public benchmarks follow. In April 2024,
+75% of the tasks in Eleuther’s lm-evaluation-harness are multiple-choice,
+including UC Berkeley’s MMLU (2020), Microsoft’s AGIEval (2023), and
+the AI2 Reasoning Challenge (ARC-C) (2018). In their paper, AGIEval’s
+authors explained that they excluded open-ended tasks on purpose to avoid
+inconsistent assessment.
+Here’s an example of a multiple-choice question in the MMLU benchmark:",9a42b3d7
+how to set metrics for chatbot evaluation,"The chapter suggests determining a usefulness threshold for evaluation metrics, like a factual consistency score, to assess a chatbot's effectiveness before engaging users.",beginner,"It’s also helpful to determine the usefulness threshold: what scores must an
+application achieve for it to be useful? For example, you might determine
+that your chatbot’s factual consistency score must be at least 50% for it to
+be useful. Anything below this makes it unusable even for general customer
+requests.
+Before developing AI evaluation metrics, it’s crucial to first understand the
+business metrics you’re targeting. Many applications focus on stickiness
+metrics, such as daily, weekly, or monthly active users (DAU, WAU,
+MAU). Others prioritize engagement metrics, like the number of
+conversations a user initiates per month or the duration of each visit—the
+longer a user stays on the app, the less likely they are to leave. Choosing
+which metrics to prioritize can feel like balancing profits with social
+responsibility. While an emphasis on stickiness and engagement metrics can
+lead to higher revenues, it may also cause a product to prioritize addictive
+features or extreme content, which can be detrimental to users.
+Step 3. Define Evaluation Methods and Data
+Now that you’ve developed your criteria and scoring rubrics, let’s define
+what methods and data you want to use to evaluate your application.",f196fff2
+how to detect data contamination in AI models,"The chapter explains that data contamination can be detected using heuristics like n-gram overlapping and perplexity, which help identify if a model has seen evaluation samples during training.",beginner,"to evaluate it on contaminated benchmarks, but this might still be the right
+thing to do.
+Handling data contamination
+The prevalence of data contamination undermines the trustworthiness of
+evaluation benchmarks. Just because a model can achieve high performance
+on bar exams doesn’t mean it’s good at giving legal advice. It could just be
+that this model has been trained on many bar exam questions.
+To deal with data contamination, you first need to detect the contamination,
+and then decontaminate your data. You can detect contamination using
+heuristics like n-gram overlapping and perplexity:
+N-gram overlapping
+For example, if a sequence of 13 tokens in an evaluation sample is
+also in the training data, the model has likely seen this evaluation
+sample during training. This evaluation sample is considered dirty.
+Perplexity
+Recall that perplexity measures how difficult it is for a model to
+predict a given text. If a model’s perplexity on evaluation data is
+unusually low, meaning the model can easily predict the text, it’s
+possible that the model has seen this data before during training.",4098d776
